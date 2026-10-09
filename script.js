@@ -705,75 +705,48 @@ setInterval(
     1000
 );
 /* WEDDING BACKGROUND MUSIC */
-
-/* WEDDING MUSIC — FIXED PLAY/PAUSE */
-
+// WEDDING BACKGROUND MUSIC
 (() => {
     const audio = document.getElementById("weddingMusic");
     const button = document.getElementById("musicToggle");
     const label = document.getElementById("musicLabel");
 
-    if (!audio || !button || !label) {
-        console.error("Music player or button is missing from index.html.");
-        return;
-    }
+    if (!audio || !button || !label) return;
 
     audio.loop = true;
     audio.volume = 0.10;
 
-    let isPlaying = false;
-
-    function updateButton(playing, message) {
-        isPlaying = playing;
-        button.classList.toggle("is-playing", playing);
-        label.textContent = message || (playing ? "MUSIC ON" : "TAP TO PLAY");
-        button.setAttribute("aria-pressed", String(playing));
-        button.setAttribute(
-            "aria-label",
-            playing ? "Pause wedding music" : "Play wedding music"
-        );
-    }
-
-    async function playMusic() {
-        try {
-            await audio.play();
-            updateButton(true, "MUSIC ON");
-        } catch (error) {
-            updateButton(false, "TAP TO PLAY");
-            console.error("Music playback failed:", error);
-        }
-    }
-
-    function pauseMusic() {
-        audio.pause();
-        updateButton(false, "MUSIC OFF");
-    }
-
-    // The button has exactly one play/pause handler.
-    button.addEventListener("click", async (event) => {
-        event.stopPropagation();
-
-        if (isPlaying && !audio.paused) {
-            pauseMusic();
-        } else {
-            await playMusic();
-        }
-    });
-
-    // Try autoplay. Browsers may block it.
-    playMusic();
-
-    // If autoplay is blocked, start on the first click elsewhere.
-    document.addEventListener("click", (event) => {
-        if (event.target.closest("#musicToggle")) return;
-
+    function updateButton() {
         if (audio.paused) {
-            playMusic();
+            label.textContent = audio.currentTime === 0
+                ? "TAP TO PLAY MUSIC"
+                : "RESUME MUSIC";
+
+            button.setAttribute("aria-label", "Play wedding music");
+        } else {
+            label.textContent = "PAUSE MUSIC";
+            button.setAttribute("aria-label", "Pause wedding music");
         }
+    }
+
+    button.addEventListener("click", async () => {
+        if (audio.paused) {
+            try {
+                await audio.play();
+            } catch (error) {
+                label.textContent = "TAP TO PLAY MUSIC";
+                console.error("Music playback failed:", error);
+            }
+        } else {
+            audio.pause();
+        }
+
+        updateButton();
     });
 
-    audio.addEventListener("error", () => {
-        updateButton(false, "MUSIC UNAVAILABLE");
-        console.error("Audio file could not be loaded:", audio.currentSrc);
-    });
+    audio.addEventListener("play", updateButton);
+    audio.addEventListener("pause", updateButton);
+    audio.addEventListener("ended", updateButton);
+
+    updateButton();
 })();
