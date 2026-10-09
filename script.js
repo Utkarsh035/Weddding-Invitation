@@ -739,3 +739,54 @@ if (audio && button && label) {
                 : "RESUME MUSIC";
     });
 }
+// Wedding music controls
+(() => {
+    const audio = document.getElementById("weddingMusic");
+    const button = document.getElementById("musicToggle");
+    const label = document.getElementById("musicLabel");
+
+    if (!audio || !button || !label) {
+        console.error("Music audio/button/label missing.");
+        return;
+    }
+
+    audio.src = "./Ullam-Paadum.mp3";
+    audio.loop = true;
+    audio.volume = 0.15;
+
+    function showState() {
+        if (audio.paused) {
+            label.textContent =
+                audio.currentTime > 0 ? "RESUME MUSIC" : "TAP TO PLAY MUSIC";
+        } else {
+            label.textContent = "PAUSE MUSIC";
+        }
+    }
+
+    button.addEventListener("click", async () => {
+        if (!audio.paused) {
+            audio.pause();
+            showState();
+            return;
+        }
+
+        label.textContent = "LOADING MUSIC...";
+
+        try {
+            await audio.play();
+            label.textContent = "PAUSE MUSIC";
+        } catch (error) {
+            console.error("Music error:", error.name, error.message);
+            label.textContent = "PLAY FAILED — CHECK CONSOLE";
+        }
+    });
+
+    audio.addEventListener("pause", showState);
+    audio.addEventListener("play", showState);
+    audio.addEventListener("error", () => {
+        console.error("Audio loading error:", audio.error);
+        label.textContent = "AUDIO ERROR";
+    });
+
+    showState();
+})();
