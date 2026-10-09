@@ -704,3 +704,76 @@ setInterval(
     updateCountdown,
     1000
 );
+/* WEDDING BACKGROUND MUSIC */
+
+/* WEDDING MUSIC — FIXED PLAY/PAUSE */
+
+(() => {
+    const audio = document.getElementById("weddingMusic");
+    const button = document.getElementById("musicToggle");
+    const label = document.getElementById("musicLabel");
+
+    if (!audio || !button || !label) {
+        console.error("Music player or button is missing from index.html.");
+        return;
+    }
+
+    audio.loop = true;
+    audio.volume = 0.10;
+
+    let isPlaying = false;
+
+    function updateButton(playing, message) {
+        isPlaying = playing;
+        button.classList.toggle("is-playing", playing);
+        label.textContent = message || (playing ? "MUSIC ON" : "TAP TO PLAY");
+        button.setAttribute("aria-pressed", String(playing));
+        button.setAttribute(
+            "aria-label",
+            playing ? "Pause wedding music" : "Play wedding music"
+        );
+    }
+
+    async function playMusic() {
+        try {
+            await audio.play();
+            updateButton(true, "MUSIC ON");
+        } catch (error) {
+            updateButton(false, "TAP TO PLAY");
+            console.error("Music playback failed:", error);
+        }
+    }
+
+    function pauseMusic() {
+        audio.pause();
+        updateButton(false, "MUSIC OFF");
+    }
+
+    // The button has exactly one play/pause handler.
+    button.addEventListener("click", async (event) => {
+        event.stopPropagation();
+
+        if (isPlaying && !audio.paused) {
+            pauseMusic();
+        } else {
+            await playMusic();
+        }
+    });
+
+    // Try autoplay. Browsers may block it.
+    playMusic();
+
+    // If autoplay is blocked, start on the first click elsewhere.
+    document.addEventListener("click", (event) => {
+        if (event.target.closest("#musicToggle")) return;
+
+        if (audio.paused) {
+            playMusic();
+        }
+    });
+
+    audio.addEventListener("error", () => {
+        updateButton(false, "MUSIC UNAVAILABLE");
+        console.error("Audio file could not be loaded:", audio.currentSrc);
+    });
+})();

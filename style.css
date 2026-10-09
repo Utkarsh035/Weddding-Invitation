@@ -2957,7 +2957,71 @@ footer {
 
     transform: translateZ(2px);
 }
+/* Wedding background music button */
 
+.music-toggle {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    z-index: 500;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 13px 18px;
+    border: 1px solid rgba(170, 135, 84, 0.6);
+    border-radius: 40px;
+
+    background: rgba(248, 241, 231, 0.94);
+    color: #2c2824;
+
+    font-family: "DM Sans", sans-serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+
+    cursor: pointer;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    box-shadow: 0 8px 25px rgba(50, 35, 20, 0.12);
+    transition: all 0.3s ease;
+}
+
+.music-toggle:hover {
+    background: #aa8754;
+    color: #fffdf9;
+    transform: translateY(-3px);
+}
+
+.music-icon {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.music-toggle.is-playing .music-icon {
+    animation: musicPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes musicPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+}
+
+@media (max-width: 480px) {
+    .music-toggle {
+        right: 14px;
+        bottom: 14px;
+        padding: 11px 14px;
+        font-size: 9px;
+    }
+}
 
 .cover-decoration::before {
     content: "";
