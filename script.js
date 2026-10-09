@@ -739,7 +739,8 @@ if (audio && button && label) {
                 : "RESUME MUSIC";
     });
 }
-// Wedding music controls
+
+/* Wedding music controls */
 (() => {
     const audio = document.getElementById("weddingMusic");
     const button = document.getElementById("musicToggle");
@@ -750,43 +751,42 @@ if (audio && button && label) {
         return;
     }
 
-    audio.src = "./Ullam-Paadum.mp3";
     audio.loop = true;
     audio.volume = 0.15;
 
-    function showState() {
+    function updateButton() {
         if (audio.paused) {
             label.textContent =
                 audio.currentTime > 0 ? "RESUME MUSIC" : "TAP TO PLAY MUSIC";
+            button.setAttribute("aria-label", "Play wedding music");
         } else {
             label.textContent = "PAUSE MUSIC";
+            button.setAttribute("aria-label", "Pause wedding music");
         }
     }
 
-    button.addEventListener("click", async () => {
-        if (!audio.paused) {
+    button.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        if (audio.paused) {
+            label.textContent = "LOADING MUSIC...";
+
+            try {
+                await audio.play();
+                updateButton();
+            } catch (error) {
+                console.error("Music playback failed:", error);
+                label.textContent = "TAP TO PLAY MUSIC";
+            }
+        } else {
             audio.pause();
-            showState();
-            return;
-        }
-
-        label.textContent = "LOADING MUSIC...";
-
-        try {
-            await audio.play();
-            label.textContent = "PAUSE MUSIC";
-        } catch (error) {
-            console.error("Music error:", error.name, error.message);
-            label.textContent = "PLAY FAILED — CHECK CONSOLE";
+            updateButton();
         }
     });
 
-    audio.addEventListener("pause", showState);
-    audio.addEventListener("play", showState);
-    audio.addEventListener("error", () => {
-        console.error("Audio loading error:", audio.error);
-        label.textContent = "AUDIO ERROR";
-    });
+    audio.addEventListener("play", updateButton);
+    audio.addEventListener("pause", updateButton);
+    audio.addEventListener("ended", updateButton);
 
-    showState();
+    updateButton();
 })();
