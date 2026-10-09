@@ -704,41 +704,7 @@ setInterval(
     updateCountdown,
     1000
 );
-/* WEDDING BACKGROUND MUSIC */
-const audio = document.getElementById("weddingMusic");
-const button = document.getElementById("musicToggle");
-const label = document.getElementById("musicLabel");
 
-if (audio && button && label) {
-    audio.loop = true;
-    audio.volume = 0.15;
-
-    label.textContent = "TAP TO PLAY MUSIC";
-
-    button.addEventListener("click", async () => {
-        if (audio.paused) {
-            try {
-                await audio.play();
-            } catch (error) {
-                console.error("Audio error:", error);
-                label.textContent = "MUSIC FAILED TO PLAY";
-            }
-        } else {
-            audio.pause();
-        }
-    });
-
-    audio.addEventListener("play", () => {
-        label.textContent = "PAUSE MUSIC";
-    });
-
-    audio.addEventListener("pause", () => {
-        label.textContent =
-            audio.currentTime === 0
-                ? "TAP TO PLAY MUSIC"
-                : "RESUME MUSIC";
-    });
-}
 
 /* Wedding music controls */
 (() => {
