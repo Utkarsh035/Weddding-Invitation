@@ -705,48 +705,37 @@ setInterval(
     1000
 );
 /* WEDDING BACKGROUND MUSIC */
-// WEDDING BACKGROUND MUSIC
-(() => {
-    const audio = document.getElementById("weddingMusic");
-    const button = document.getElementById("musicToggle");
-    const label = document.getElementById("musicLabel");
+const audio = document.getElementById("weddingMusic");
+const button = document.getElementById("musicToggle");
+const label = document.getElementById("musicLabel");
 
-    if (!audio || !button || !label) return;
-
+if (audio && button && label) {
     audio.loop = true;
-    audio.volume = 0.10;
+    audio.volume = 0.15;
 
-    function updateButton() {
-        if (audio.paused) {
-            label.textContent = audio.currentTime === 0
-                ? "TAP TO PLAY MUSIC"
-                : "RESUME MUSIC";
-
-            button.setAttribute("aria-label", "Play wedding music");
-        } else {
-            label.textContent = "PAUSE MUSIC";
-            button.setAttribute("aria-label", "Pause wedding music");
-        }
-    }
+    label.textContent = "TAP TO PLAY MUSIC";
 
     button.addEventListener("click", async () => {
         if (audio.paused) {
             try {
                 await audio.play();
             } catch (error) {
-                label.textContent = "TAP TO PLAY MUSIC";
-                console.error("Music playback failed:", error);
+                console.error("Audio error:", error);
+                label.textContent = "MUSIC FAILED TO PLAY";
             }
         } else {
             audio.pause();
         }
-
-        updateButton();
     });
 
-    audio.addEventListener("play", updateButton);
-    audio.addEventListener("pause", updateButton);
-    audio.addEventListener("ended", updateButton);
+    audio.addEventListener("play", () => {
+        label.textContent = "PAUSE MUSIC";
+    });
 
-    updateButton();
-})();
+    audio.addEventListener("pause", () => {
+        label.textContent =
+            audio.currentTime === 0
+                ? "TAP TO PLAY MUSIC"
+                : "RESUME MUSIC";
+    });
+}
